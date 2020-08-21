@@ -16,9 +16,8 @@ object TicTacToe {
   val MAXRANGE = 9
   val playerPosition = new ListBuffer[Int]()
   val computerPosition = new ListBuffer[Int]()
-  val occupiedPosition = new ListBuffer[Int]()
-  val COMPUTERSYMBOL = 'O'
-  val PLAYERSYMBOL = 'X'
+  var COMPUTERSYMBOL = 'O'
+  var PLAYERSYMBOL = 'X'
   var board = Array.ofDim[Char](GAMEDIMENSION,GAMEDIMENSION)
 
   def displayBoard() {
@@ -137,31 +136,31 @@ object TicTacToe {
 
   def equals3(a:Char, b:Char, c:Char) = (a == b && b == c && a != ' ')
 
-    def checkGameResult(board: Array[Array[Char]]):String = {
-      var winner: String = "N"
+  def checkGameResult():String = {
+    var winner: String = "N"
 
-      //horizontal
-      for (row <- 0.until(GAMEDIMENSION);if (equals3(board(row)(0), board(row)(1), board(row)(2)))) {
-          return board(row)(0).toString
-        }
-      //Vertical
-      for (col <- 0.until(GAMEDIMENSION);if(equals3(board(0)(col), board(1)(col), board(2)(col)))) {
-        return board(0)(col).toString
-        }
-      //Diagonal
-      if (equals3(board(0)(0), board(1)(1), board(2)(2))) {
-        return board(0)(0).toString
+    //horizontal
+    for (row <- 0.until(GAMEDIMENSION);if (equals3(board(row)(0), board(row)(1), board(row)(2)))) {
+        return board(row)(0).toString
       }
-      if (equals3(board(2)(0), board(1)(1), board(0)(2))) {
-        return board(2)(0).toString
+    //Vertical
+    for (col <- 0.until(GAMEDIMENSION);if(equals3(board(0)(col), board(1)(col), board(2)(col)))) {
+      return board(0)(col).toString
       }
-      if (draw(board) && winner == "N") {
-        "tie"
-      }
-      else {
-        winner
-      }
+    //Diagonal
+    if (equals3(board(0)(0), board(1)(1), board(2)(2))) {
+      return board(0)(0).toString
     }
+    if (equals3(board(2)(0), board(1)(1), board(0)(2))) {
+      return board(2)(0).toString
+    }
+    if (draw(board) && winner == "N") {
+      "tie"
+    }
+    else {
+      winner
+    }
+  }
     //checking for draw
   def draw(board :Array[Array[Char]]): Boolean ={
     for(row <- 0.until(GAMEDIMENSION); col <- 0.until(GAMEDIMENSION); if board(row)(col) == ' '){
@@ -197,15 +196,16 @@ object TicTacToe {
     }
   }
   def printResult() : Boolean = {
-    var checkResult: String = checkGameResult(board)
+    var checkResult: String = checkGameResult()
     if (checkResult != "N") {
-      if (checkResult == "X") {
+      println(checkResult)
+      if (checkResult == PLAYERSYMBOL.toString) {
         displayBoard()
         println("Winner is player")
         return true
 
       }
-      else if (checkResult == "O") {
+      else if (checkResult == COMPUTERSYMBOL.toString) {
         displayBoard()
         println("Winner is Computer")
         return true
@@ -219,50 +219,87 @@ object TicTacToe {
     false
   }
 
-    def main(args: Array[String]): Unit = {
-      //board initialization
-      for(row <- 0.until(GAMEDIMENSION);col <-0.until(3)){
-          board(row)(col) = ' '
+  def turnChoose(): Int ={
+    val random = Random
+    val turn = random.nextInt(2)
+    if(turn == 0) {
+      val symbolTurn = random.nextInt(2)
+      if (symbolTurn == 0) {
+        println("Computer Chance First")
+        COMPUTERSYMBOL = 'X'
+        PLAYERSYMBOL = 'O'
       }
-      /*
-        1 - Player Turn
-        0 -Computer Turn
-      */
-      var turn = 1
-      val outer = new Breaks
-      var playerMove = 0
-      outer.breakable{
-        while(true){
-          if(turn == 1){
-            playerMove = playPlayerMove()
-            board(playerMove / GAMEDIMENSION)(playerMove % GAMEDIMENSION) = PLAYERSYMBOL
-            playerPosition.append(playerMove)
+    }
+    else{
+        startPlay()
+      }
+    return turn
+  }
 
-            displayBoard()
-          }
-          else if(turn == 0){
-            //Computer move
-            println("Computer Chance to play")
-            var computerMove = computerMovePlay()
-            println("The computer's move is %d".format(computerMove +1))
-            board(computerMove / GAMEDIMENSION)(computerMove % GAMEDIMENSION) = COMPUTERSYMBOL
-            computerPosition.append(computerMove)
-            displayBoard()
-          }
-          //Checking result
-          var isEnd = printResult()
-          if(isEnd) {
-            outer.break
-          }
-          if(turn == 1){
-            turn = 0
-          }
-          else{
-            turn = 1
-          }
+  def startPlay(): Unit ={
+    println("Enter the symbol among X or O u wanna take")
+    val symbol = readChar()
+    try {
+      if (symbol == 'X' || symbol == 'O') {
+        if (symbol == 'O') {
+          COMPUTERSYMBOL = 'X'
+          PLAYERSYMBOL = 'O'
+        }
+      }
+
+      else {
+          throw new Exception("Enter either X or O")
+        }
+    }
+    catch {
+      case ex:Exception => println(ex)
+        startPlay()
+    }
+  }
+
+  def main(args: Array[String]): Unit = {
+    //board initialization
+    for(row <- 0.until(GAMEDIMENSION);col <-0.until(3)){
+        board(row)(col) = ' '
+    }
+    /*
+      1 - Player Turn
+      0 -Computer Turn
+    */
+    val outer = new Breaks
+    var playerMove = 0
+    var turn = turnChoose()
+    outer.breakable{
+      while(true){
+        if(turn == 1){
+          playerMove = playPlayerMove()
+          board(playerMove / GAMEDIMENSION)(playerMove % GAMEDIMENSION) = PLAYERSYMBOL
+          playerPosition.append(playerMove)
+          displayBoard()
+        }
+        else if(turn == 0){
+          //Computer move
+          println("Computer Chance to play")
+          var computerMove = computerMovePlay()
+          println("The computer's move is %d".format(computerMove +1))
+          board(computerMove / GAMEDIMENSION)(computerMove % GAMEDIMENSION) = COMPUTERSYMBOL
+          computerPosition.append(computerMove)
+          displayBoard()
+        }
+        //Checking result
+        var isEnd = printResult()
+        if(isEnd) {
+          outer.break
+        }
+        if(turn == 1){
+          turn = 0
+        }
+        else{
+          turn = 1
         }
       }
     }
   }
+}
 
 
