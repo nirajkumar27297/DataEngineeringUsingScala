@@ -66,18 +66,6 @@ object TicTacToe {
     }
   }
 
-    //Computer play using random function
-  def computerMovePlayRandom(): Int = {
-      while(true){
-        var random = Random
-        var move = Random.nextInt(MAXRANGE)
-        if(moveValid(move)) {
-          return move
-        }
-      }
-      -1
-    }
-
   def computerMovePlay(): Int = {
     //Winning Position
     var move = checkComputerWinning(computerPosition)
@@ -93,8 +81,58 @@ object TicTacToe {
       computerPosition.append(move)
       return move
     }
-    //Random Position
-    return computerMovePlayRandom
+    //Corner Cases
+    val cornerMove = checkCornerPosition()
+    if ( cornerMove != - 1) {
+      return cornerMove
+    }
+    //Check Center
+    val centerMove = checkCenterPosition()
+    if ( cornerMove != - 1) {
+      return centerMove
+    }
+    val SidesMove = checkSidesPosition()
+    if ( cornerMove != - 1) {
+      return SidesMove
+    }
+    return -1
+  }
+
+  def checkCornerPosition(): Int  = {
+    //Corners
+    for (position <- 0.until(MAXRANGE); if position % 2 == 0 && position != 4) {
+      var validSides = moveValid(position)
+      if (validSides) {
+        board((position / GAMEDIMENSION))(position % GAMEDIMENSION) = COMPUTERSYMBOL
+        computerPosition.append(position)
+        return position
+      }
+    }
+    -1
+  }
+
+  def checkCenterPosition():Int = {
+    //Center
+    val centerPosition = 4
+    val centerValid = moveValid(centerPosition)
+    if (centerValid) {
+      board((centerPosition / GAMEDIMENSION))(centerPosition % GAMEDIMENSION) = COMPUTERSYMBOL
+      computerPosition.append(centerPosition)
+      return centerPosition
+    }
+    -1
+  }
+  def checkSidesPosition():Int = {
+    //Sides Check
+    for (position <- 1.until(MAXRANGE); if position % 2 != 0) {
+      val validSides = moveValid(position)
+      if (validSides) {
+        board((position / GAMEDIMENSION))(position % GAMEDIMENSION) = COMPUTERSYMBOL
+        computerPosition.append(position)
+        return position
+      }
+    }
+    -1
   }
 
   def equals3(a:Char, b:Char, c:Char) = (a == b && b == c && a != ' ')
