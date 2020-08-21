@@ -86,6 +86,13 @@ object TicTacToe {
       computerPosition.append(move)
       return move
     }
+    //Blocking Position
+    move = checkComputerWinning(playerPosition)
+    if (move != - 1 && this.moveValid(move)) {
+      board((move / GAMEDIMENSION))(move % GAMEDIMENSION) = COMPUTERSYMBOL
+      computerPosition.append(move)
+      return move
+    }
     //Random Position
     return computerMovePlayRandom
   }
