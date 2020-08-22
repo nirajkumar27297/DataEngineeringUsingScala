@@ -4,7 +4,7 @@ import scala.util.matching.Regex
 
 object MobileNumberMatch {
   def patternMatch(mobileNumber:String): String = {
-    val pattern = new Regex("[1-9]{2}\\s[1-9]{1}[0-9]{9}")
+    val pattern = new Regex("^[1-9]{2}\\s[1-9]{1}[0-9]{9}$")
     val result = pattern.findFirstMatchIn(mobileNumber) match {
       case Some(_) => "Mobile Number is Okay"
       case None => "Invalid !!! First two digits should be country code followed by a space " +
