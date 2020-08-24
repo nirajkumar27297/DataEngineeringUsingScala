@@ -32,18 +32,18 @@ object TicTacToe {
   //Checking computer position
   def checkComputerWinning(position: ListBuffer[Int]): Int = { //Storing all the wining Positions
     val winningPosition = Array(Array(0, 1, 2), Array(3, 4, 5), Array(6, 7, 8), Array(0, 3, 6), Array(1, 4, 7), Array(2, 5, 8), Array(0, 4, 8), Array(2, 4, 6))
-    var k = 0
+    var winningPositionArrayStart = 0
     val unMatchedPosition = new ListBuffer[Int]
-    while ( k < winningPosition.length) {
+    while ( winningPositionArrayStart < winningPosition.length) {
       var countMatch = 0
       unMatchedPosition.clear()
-      for (i <- 0 until winningPosition(k).length) {
+      for (  winningPositionStart <- 0 until winningPosition(winningPositionArrayStart).length) {
         // if position array list contains winning positing incrementing by 1
-        if (position.contains(winningPosition(k)(i))) {
+        if (position.contains(winningPosition(winningPositionArrayStart)(winningPositionStart))) {
           countMatch += 1
         }
         else {
-          unMatchedPosition.append(winningPosition(k)(i))
+          unMatchedPosition.append(winningPosition(winningPositionArrayStart)(winningPositionStart))
         }
       }
 
@@ -51,7 +51,7 @@ object TicTacToe {
         && board(unMatchedPosition(0) / GAMEDIMENSION )(unMatchedPosition(0) %  GAMEDIMENSION) == ' ') {
         return unMatchedPosition(0)
       }
-      k += 1
+      winningPositionArrayStart += 1
     }
     -1
   }
@@ -198,7 +198,6 @@ object TicTacToe {
   def printResult() : Boolean = {
     var checkResult: String = checkGameResult()
     if (checkResult != "N") {
-      println(checkResult)
       if (checkResult == PLAYERSYMBOL.toString) {
         displayBoard()
         println("Winner is player")
