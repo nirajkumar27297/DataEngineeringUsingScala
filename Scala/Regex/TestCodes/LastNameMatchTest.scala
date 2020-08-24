@@ -2,14 +2,13 @@ import RegexMatching.LastNameMatch
 import org.scalatest.FunSuite
 
 class LastNameMatchTest extends FunSuite {
-  test("NameMatchingCorrect") {
-    assert(LastNameMatch.patternMatch("Kumar") == "Last Name is Okay")
+  test("GivenStringInput_WhenFirstAlphabetCapitalAndLengthGreaterThan3_ReturnValid") {
+    assert(LastNameMatch.patternMatch("Kumar") == "Valid")
   }
-  test("NameMatchingInCorrectPattern"){
-    assert(LastNameMatch.patternMatch("kumar") == "Invalid !!! First Letter should be capital and length should be atleast three")
+  test("GivenStringInput_WhenFirstAlphabetSmallAndLengthGreaterThan3_ReturnInvalid") {
+    assert(LastNameMatch.patternMatch("kumar") == "Invalid")
   }
-  test(testName = "NameMatchingIncorrectLength"){
-    assert(LastNameMatch.patternMatch("ku") == "Invalid !!! First Letter should be capital and length should be atleast three")
+  test(testName = "GivenStringInput_WhenFirstAlphabetCapitalAndLengthLessThan3_ReturnInvalid") {
+    assert(LastNameMatch.patternMatch("Ku") == "Invalid")
   }
-
 }
