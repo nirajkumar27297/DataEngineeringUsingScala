@@ -3,12 +3,6 @@ import RegexMatching.EmailIDMatch
 import org.scalatest.prop.TableDrivenPropertyChecks._
 class EmailIDMatchTestScala extends FunSuite with Matchers {
   test("testEmail_ConsistingOfValidInvalidEmail_ReturnValidForValidEmail_InvalidForInvalidEmail") {
-    //    val x = Array("abc@yahoo.com","abc-100@yahoo.com")
-    //    val y = Array("Valid","Invalid")
-    //
-    //    forAll { (x: String, y: String) =>
-    //      assert(EmailIDMatch.patternMatch(x) == y)
-    //    }
     val params = Table(("result", "EmailID"),
       ("Valid","abc@yahoo.com"),
       ("Valid","abc-100@yahoo.com"),
