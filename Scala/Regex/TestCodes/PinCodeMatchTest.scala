@@ -3,20 +3,17 @@ import org.scalatest.FunSuite
 
 class PinCodeMatchTest extends FunSuite
 {
-  test("PincodeMatchingCorrect") {
-    assert(PincodeMatch.patternMatch("832111") == "Pin Code is Okay")
+  test("GivenStringInput_WhenPincodeLengthIsSixAndDoesnotContainSpcaeAfterThirdNumber_ReturnValid") {
+    assert(PincodeMatch.patternMatch("832111") == "Valid")
   }
-  test("PincodeMatchingCorrectSpace") {
-    assert(PincodeMatch.patternMatch("832 111") == "Pin Code is Okay")
+  test("GivenStringInput_WhenPincodeLengthIsSixAndContainOneSpaceAfterThirdNumber_ReturnValid") {
+    assert(PincodeMatch.patternMatch("832 111") == "Valid")
   }
-  test("PincodeInCorrectPattern"){
-    assert(PincodeMatch.patternMatch("83215") == "First three digits should be number followed by an " +
-      "optional space and then three digit number")
+  test("GivenStringInput_WhenPincodeLengthIsLengthThanSix_ReturnInvalid"){
+    assert(PincodeMatch.patternMatch("83215") == "Invalid")
   }
-  test(testName = "PincodeIncorrectSpace"){
-    assert(PincodeMatch.patternMatch("832  111") ==
-      "First three digits should be number followed by an " +
-        "optional space and then three digit number")
+  test(testName = "GivenStringInput_WhenPincodeLengthIsSixAndContainMoreThanOneSpcaeAfterThirdNumber_ReturnInvalid"){
+    assert(PincodeMatch.patternMatch("832  111") == "Invalid")
   }
 }
 
