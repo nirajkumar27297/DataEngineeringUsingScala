@@ -16,5 +16,16 @@ class DataFramefromFileBuilder {
       case ex:org.apache.spark.sql.AnalysisException => println(ex)
     }
   }
+
+  def createJSONDataFrame(filepath: String) = {
+    try {
+      val readDataFrame = spark.read.json(filepath)
+      readDataFrame.describe().show()
+      readDataFrame.show(10)
+    }
+    catch {
+      case ex:org.apache.spark.sql.AnalysisException => println(ex)
+    }
+  }
 }
 
