@@ -27,5 +27,15 @@ class DataFramefromFileBuilder {
       case ex:org.apache.spark.sql.AnalysisException => println(ex)
     }
   }
+  def createParaquetDataFrame(filepath: String) = {
+    try {
+      val readDataFrame = spark.read.parquet(filepath)
+      readDataFrame.describe().show()
+      readDataFrame.show(10)
+    }
+    catch {
+      case ex:org.apache.spark.sql.AnalysisException => println(ex)
+    }
+  }
 }
 
