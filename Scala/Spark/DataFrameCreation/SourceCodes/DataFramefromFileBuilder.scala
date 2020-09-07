@@ -37,5 +37,15 @@ class DataFramefromFileBuilder {
       case ex:org.apache.spark.sql.AnalysisException => println(ex)
     }
   }
+  def createAvroDataFrame(filepath:String):Unit = {
+    try {
+      val readDataFrame = spark.read.format("avro").load(filepath)
+      readDataFrame.describe().show()
+      readDataFrame.show(10)
+    }
+    catch {
+      case ex:org.apache.spark.sql.AnalysisException => println(ex)
+    }
+  }
 }
 
