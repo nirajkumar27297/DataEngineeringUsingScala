@@ -39,7 +39,7 @@ class WordCoutTest extends FunSuite {
     val textDf = spark.read.text("./src/test/resources/lines.txt")
     val wordsDf = textDf.select(explode(split(textDf("value")," ")).alias("word"))
     val countDfTest = wordsDf.groupBy("word").count()
-    val outputCountDF = new WordCount().countWordsDataFrame(spark,"./src/test/resources/lines.txt")
+    val outputCountDF = new WordCount().countWordsDataFrame(spark,"./src/test/resources/lines.txt","file:///home/niraj/IdeaProjects/WordCountProblem/output")
     assert(outputCountDF.except(countDfTest).count() == 0)
   }
 
@@ -48,7 +48,7 @@ class WordCoutTest extends FunSuite {
     val textDf = spark.read.text("./src/test/resources/lines.txt")
     val wordsDf = textDf.select(explode(split(textDf("value")," ")).alias("word"))
     val countDfTest = wordsDf.groupBy("word").count()
-    val outputCountDF = new WordCount().countWordsDataFrame(spark,"./src/test/resources/linesWrong.txt")
+    val outputCountDF = new WordCount().countWordsDataFrame(spark,"./src/test/resources/linesWrong.txt","file:///home/niraj/IdeaProjects/WordCountProblem/output")
     assert(outputCountDF.except(countDfTest).count() != 0)
   }
 
