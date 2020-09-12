@@ -14,7 +14,6 @@ class WordCount {
   }
 
   def countWordsRDD(sparkContext: SparkContext,inputFile:String,outputPath:String):Map[String, Int] =  {
-
     val rawData = sparkContext.textFile(inputFile)
     val words = rawData.flatMap(line => line.split(" "))
     val wordsKv = words.map(word => (word, 1))
@@ -26,7 +25,6 @@ class WordCount {
   }
 
   def countWordsDataFrame(spark:SparkSession,inputFile:String,outputPath:String):DataFrame = {
-
     val textDf = spark.read.text(inputFile)
     val wordsDf = textDf.select(explode(split(textDf("value")," ")).alias("word"))
     val countDf = wordsDf.groupBy("word").count()
