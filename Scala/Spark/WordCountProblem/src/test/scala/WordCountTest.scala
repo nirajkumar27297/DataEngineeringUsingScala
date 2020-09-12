@@ -8,8 +8,7 @@ import org.scalatest.FunSuite
 class WordCoutTest extends FunSuite {
 
   val conf = new SparkConf().setAppName("Word Count").setMaster("local[*]")
-
-
+  
   test("test_InputSameTextFiles_MatchCountOfWordsUsingRDD_ReturnTrue") {
     val sc = new SparkContext(conf)
     val rawData = sc.textFile("./src/test/resources/lines.txt")
