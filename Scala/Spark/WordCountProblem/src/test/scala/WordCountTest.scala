@@ -1,55 +1,54 @@
+package WordCountQuestion
 
-import WordCountQuestion.WordCount
-import org.apache.spark.sql.SparkSession
+import DateTimeGenerator.GenerateDateTime
+import org.apache.spark.sql.{DataFrame, Dataset, Encoder, SparkSession}
 import org.apache.spark.sql.functions.{explode, split}
-import org.apache.spark.{SparkConf, SparkContext}
-import org.scalatest.FunSuite
+import org.apache.spark.SparkContext
 
-class WordCoutTest extends FunSuite {
+class WordCount {
 
-  val conf = new SparkConf().setAppName("Word Count").setMaster("local[*]")
+  private def getDateTime():String = {
+    val generateDateTimeObj = new GenerateDateTime()
+    val currentTime = generateDateTimeObj.generateTimeDDMMYYFormat()
+    currentTime
+  }
 
+  def countWordsRDD(sparkContext: SparkContext,inputFile:String,outputPath:String):Map[String, Int] =  {
 
-  test("test_InputSameTextFiles_MatchCountOfWordsUsingRDD_ReturnTrue") {
-    val sc = new SparkContext(conf)
-    val rawData = sc.textFile("./src/test/resources/lines.txt")
+    val rawData = sparkContext.textFile(inputFile)
     val words = rawData.flatMap(line => line.split(" "))
     val wordsKv = words.map(word => (word, 1))
-    val output = wordsKv.reduceByKey(_ + _)
-    val testMap = output.collect().toMap
-    val outputMap = new WordCount().countWordsRDD(sc,"./src/test/resources/lines.txt","file:///home/niraj/IdeaProjects/WordCountProblem/output")
-    assert(testMap.equals(outputMap) == true)
-    sc.stop()
+    val outputRDD = wordsKv.reduceByKey(_ + _)
+    println(outputRDD.collect().toMap)
+    val currentTime = getDateTime()
+    outputRDD.saveAsTextFile(outputPath+currentTime)
+    outputRDD.collect().toMap
   }
 
-  test("test_InputDifferentTextFiles_MatchCountOfWords_ReturnFalse") {
-    val sc = new SparkContext(conf)
-    val rawData = sc.textFile("./src/test/resources/lines.txt")
-    val words = rawData.flatMap(line => line.split(" "))
-    val wordsKv = words.map(word => (word, 1))
-    val output = wordsKv.reduceByKey(_ + _)
-    val testMap = output.collect().toMap
-    val outputMap = new WordCount().countWordsRDD(sc,"./src/test/resources/linesWrong.txt","file:///home/niraj/IdeaProjects/WordCountProblem/output")
-    assert(testMap.equals(outputMap) == false)
-    sc.stop()
-  }
+  def countWordsDataFrame(spark:SparkSession,inputFile:String,outputPath:String):DataFrame = {
 
-  test("test_InputSameTextFiles_MatchCountOfWordsUsingDataFrame_ReturnZero") {
-    val spark = SparkSession.builder().config(conf).getOrCreate()
-    val textDf = spark.read.text("./src/test/resources/lines.txt")
+    val textDf = spark.read.text(inputFile)
     val wordsDf = textDf.select(explode(split(textDf("value")," ")).alias("word"))
-    val countDfTest = wordsDf.groupBy("word").count()
-    val outputCountDF = new WordCount().countWordsDataFrame(spark,"./src/test/resources/lines.txt")
-    assert(outputCountDF.except(countDfTest).count() == 0)
+    val countDf = wordsDf.groupBy("word").count()
+    countDf.show(10)
+    val currentDateTime = getDateTime()
+    countDf.write.csv(outputPath+currentDateTime)
+    countDf
   }
 
-  test("test_InputSameTextFiles_MatchCountOfWordsUsingDataFrame_ReturnNonZero") {
-    val spark = SparkSession.builder().config(conf).getOrCreate()
-    val textDf = spark.read.text("./src/test/resources/lines.txt")
-    val wordsDf = textDf.select(explode(split(textDf("value")," ")).alias("word"))
-    val countDfTest = wordsDf.groupBy("word").count()
-    val outputCountDF = new WordCount().countWordsDataFrame(spark,"./src/test/resources/linesWrong.txt")
-    assert(outputCountDF.except(countDfTest).count() != 0)
+  def countWordsDataset(spark:SparkSession,inputFile:String,outputPath:String):DataFrame = {
+    import spark.implicits._
+    val textDataSet = spark.read.text(inputFile).as[String]
+    val wordsDataset = textDataSet.flatMap(_.split(" ")).withColumnRenamed("value","words")
+    val countDF = wordsDataset.groupBy("words").count()
+    countDF.show(10)
+    val currentDateTime = getDateTime()
+    countDF.write.csv(outputPath+currentDateTime)
+    countDF
   }
-
 }
+
+
+
+
+
