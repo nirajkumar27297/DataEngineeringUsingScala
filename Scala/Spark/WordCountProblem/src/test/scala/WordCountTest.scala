@@ -52,4 +52,24 @@ class WordCoutTest extends FunSuite {
     assert(outputCountDF.except(countDfTest).count() != 0)
   }
 
+  test("test_InputSameTextFiles_MatchCountOfWordsUsingDataSet_ReturnZero") {
+    val spark = SparkSession.builder().config(conf).getOrCreate()
+    import spark.implicits._
+    val textDataSet = spark.read.text("./src/test/resources/lines.txt").as[String]
+    val wordsDataset = textDataSet.flatMap(_.split(" ")).withColumnRenamed("value","words")
+    val countDfTest = wordsDataset.groupBy("words").count()
+    val outputCountDF = new WordCount().countWordsDataset(spark,"./src/test/resources/lines.txt","file:///home/niraj/IdeaProjects/WordCountProblem/output")
+    assert(outputCountDF.except(countDfTest).count() == 0)
+  }
+
+  test("test_InputSameTextFiles_MatchCountOfWordsUsingDataSet_ReturnNonZero") {
+    val spark = SparkSession.builder().config(conf).getOrCreate()
+    import spark.implicits._
+    val textDataSet = spark.read.text("./src/test/resources/lines.txt").as[String]
+    val wordsDataset = textDataSet.flatMap(_.split(" ")).withColumnRenamed("value","words")
+    val countDfTest = wordsDataset.groupBy("words").count()
+    val outputCountDF = new WordCount().countWordsDataset(spark,"./src/test/resources/linesWrong.txt","file:///home/niraj/IdeaProjects/WordCountProblem/output")
+    assert(outputCountDF.except(countDfTest).count() != 0)
+  }
+
 }
